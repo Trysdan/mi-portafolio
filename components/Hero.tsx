@@ -17,7 +17,7 @@ const Hero: React.FC<HeroProps> = ({ lang }) => {
       games: 'Videojuegos', 
       back: 'Backend', 
       multi: 'Multimedia',
-      cvFile: 'Jesús_Daniel_Díaz_Pérez_CV_ES.pdf'
+      cvFile: 'Jesus_Daniel_Diaz_Perez_CV_ES.pdf'
     },
     en: { 
       availability: 'Available for new projects', 
@@ -26,7 +26,7 @@ const Hero: React.FC<HeroProps> = ({ lang }) => {
       games: 'Games', 
       back: 'Backend', 
       multi: 'Multimedia',
-      cvFile: 'Jesús_Daniel_Díaz_Pérez_CV_EN.pdf'
+      cvFile: 'Jesus_Daniel_Diaz_Perez_CV_EN.pdf'
     }
   };
 
