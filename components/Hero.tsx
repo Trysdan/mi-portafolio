@@ -10,8 +10,24 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ lang }) => {
   const labels = {
-    es: { availability: 'Disponible para nuevos proyectos', download: 'Descargar CV', dev: 'Programación', games: 'Videojuegos', back: 'Backend', multi: 'Multimedia' },
-    en: { availability: 'Available for new projects', download: 'Download CV', dev: 'Programming', games: 'Games', back: 'Backend', multi: 'Multimedia' }
+    es: { 
+      availability: 'Disponible para nuevos proyectos', 
+      download: 'Descargar CV', 
+      dev: 'Programación', 
+      games: 'Videojuegos', 
+      back: 'Backend', 
+      multi: 'Multimedia',
+      cvFile: 'Jesús_Daniel_Díaz_Pérez_CV_ES.pdf'
+    },
+    en: { 
+      availability: 'Available for new projects', 
+      download: 'Download CV', 
+      dev: 'Programming', 
+      games: 'Games', 
+      back: 'Backend', 
+      multi: 'Multimedia',
+      cvFile: 'Jesús_Daniel_Díaz_Pérez_CV_EN.pdf'
+    }
   };
 
   const l = labels[lang];
@@ -55,13 +71,14 @@ const Hero: React.FC<HeroProps> = ({ lang }) => {
               {social.network}
             </a>
           ))}
-          <button 
-            onClick={() => window.print()}
+          <a 
+            href={`/${l.cvFile}`}
+            download={l.cvFile}
             className="flex items-center gap-2 px-8 py-4 bg-slate-900 text-white border border-slate-900 rounded-2xl hover:bg-indigo-600 hover:border-indigo-600 hover:shadow-2xl transition-all font-bold active:scale-95"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             {l.download}
-          </button>
+          </a>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-5xl">

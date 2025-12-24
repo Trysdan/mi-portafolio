@@ -8,6 +8,7 @@ import Experience from './components/Experience';
 import Education from './components/Education';
 import Skills from './components/Skills';
 import Footer from './components/Footer';
+import AIChat from './components/AIChat';
 
 export type Language = 'en' | 'es';
 
@@ -15,7 +16,7 @@ const App: React.FC = () => {
   const [lang, setLang] = useState<Language>('es');
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
       <Navbar lang={lang} setLang={setLang} />
       <main>
         <Hero lang={lang} />
@@ -26,6 +27,7 @@ const App: React.FC = () => {
         <Skills lang={lang} />
       </main>
       <Footer lang={lang} />
+      <AIChat lang={lang} />
     </div>
   );
 };
