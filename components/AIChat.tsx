@@ -21,10 +21,6 @@ const AIChat: React.FC<AIChatProps> = ({ lang }) => {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    console.log("AIChat component is active and running.");
-  }, []);
-
   const labels = {
     es: {
       title: "Asistente Virtual",
@@ -36,7 +32,7 @@ const AIChat: React.FC<AIChatProps> = ({ lang }) => {
       title: "AI Assistant",
       placeholder: "Ask me about Jesús...",
       greeting: "Hi! I'm Jesús's virtual assistant. How can I help you today?",
-      error: "Sorry, I had trouble connecting to my artificial brain. Please try again.",
+      error: "Sorry, I had a problem connecting to my artificial brain. Please try again.",
     }
   };
 
@@ -53,23 +49,22 @@ const AIChat: React.FC<AIChatProps> = ({ lang }) => {
 
     const userMessage = input.trim();
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
+    
+    const newMessages: Message[] = [...messages, { role: 'user', text: userMessage }];
+    setMessages(newMessages);
     setIsLoading(true);
 
     try {
+      // Inicialización siguiendo estrictamente las reglas de la SDK
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       
-      const systemInstruction = `
-        You are the professional AI assistant for Jesús Daniel Díaz Pérez, a Software Engineer and Game Developer.
-        Answer questions based on the following JSON data: ${JSON.stringify(cvData)}.
-        Keep answers professional, concise, and helpful. 
-        Always respond in ${lang === 'es' ? 'Spanish' : 'English'}.
-        If you don't know something, suggest contacting Jesús at ${cvData.email}.
-      `;
+      const systemInstruction = `Eres el asistente profesional de Jesús Daniel Díaz Pérez. 
+      Responde de forma concisa basándote en su CV: ${JSON.stringify(cvData)}. 
+      Idioma de respuesta: ${lang === 'es' ? 'Español' : 'Inglés'}.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
-        contents: [...messages, { role: 'user', text: userMessage }].map(m => ({
+        contents: newMessages.map(m => ({
           role: m.role,
           parts: [{ text: m.text }]
         })),
@@ -79,10 +74,14 @@ const AIChat: React.FC<AIChatProps> = ({ lang }) => {
         }
       });
 
-      const aiText = response.text || l.error;
-      setMessages(prev => [...prev, { role: 'model', text: aiText }]);
+      const aiText = response.text;
+      if (aiText) {
+        setMessages(prev => [...prev, { role: 'model', text: aiText }]);
+      } else {
+        throw new Error("Respuesta vacía");
+      }
     } catch (error) {
-      console.error("AI Error:", error);
+      console.error("Error de IA:", error);
       setMessages(prev => [...prev, { role: 'model', text: l.error }]);
     } finally {
       setIsLoading(false);
@@ -91,10 +90,9 @@ const AIChat: React.FC<AIChatProps> = ({ lang }) => {
 
   return (
     <div className="fixed bottom-6 right-6 z-[99999] font-sans">
-      {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-20 right-0 w-[320px] sm:w-[350px] md:w-[400px] h-[500px] bg-white rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-slate-100 flex flex-col overflow-hidden animate-fadeIn glass-effect">
-          <div className="p-6 bg-indigo-600 text-white flex justify-between items-center">
+        <div className="absolute bottom-20 right-0 w-[320px] sm:w-[350px] md:w-[400px] h-[520px] bg-white rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-slate-100 flex flex-col overflow-hidden animate-fadeIn glass-effect">
+          <div className="p-6 bg-indigo-600 text-white flex justify-between items-center shrink-0">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white/20 rounded-xl">
                 <Sparkles className="w-5 h-5" />
@@ -103,7 +101,7 @@ const AIChat: React.FC<AIChatProps> = ({ lang }) => {
                 <h3 className="text-sm font-bold tracking-tight">{l.title}</h3>
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
-                  <span className="text-[10px] opacity-80 font-medium">Online</span>
+                  <span className="text-[10px] font-medium">Online</span>
                 </div>
               </div>
             </div>
@@ -112,22 +110,24 @@ const AIChat: React.FC<AIChatProps> = ({ lang }) => {
             </button>
           </div>
 
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/50">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/30">
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0">
                 <Sparkles className="w-4 h-4" />
               </div>
-              <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700 leading-relaxed border border-slate-100">
+              <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700 leading-relaxed border border-slate-100 max-w-[85%]">
                 {l.greeting}
               </div>
             </div>
 
             {messages.map((msg, i) => (
               <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'user' ? 'bg-slate-900 text-white' : 'bg-indigo-100 text-indigo-600'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-[10px] ${
+                  msg.role === 'user' ? 'bg-slate-900 text-white' : 'bg-indigo-100 text-indigo-600'
+                }`}>
                   {msg.role === 'user' ? 'U' : <Sparkles className="w-4 h-4" />}
                 </div>
-                <div className={`p-4 rounded-2xl text-sm leading-relaxed shadow-sm border ${
+                <div className={`p-4 rounded-2xl text-sm leading-relaxed shadow-sm border max-w-[85%] ${
                   msg.role === 'user' 
                     ? 'bg-indigo-600 text-white rounded-tr-none border-indigo-500' 
                     : 'bg-white text-slate-700 rounded-tl-none border-slate-100'
@@ -151,7 +151,7 @@ const AIChat: React.FC<AIChatProps> = ({ lang }) => {
             )}
           </div>
 
-          <div className="p-4 bg-white border-t border-slate-100">
+          <div className="p-4 bg-white border-t border-slate-100 shrink-0">
             <form 
               onSubmit={(e) => { e.preventDefault(); handleSend(); }}
               className="relative flex items-center"
@@ -161,12 +161,12 @@ const AIChat: React.FC<AIChatProps> = ({ lang }) => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={l.placeholder}
-                className="w-full pl-5 pr-12 py-4 bg-slate-50 rounded-2xl text-sm border border-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all"
+                className="w-full pl-5 pr-12 py-3.5 bg-slate-50 rounded-2xl text-sm border border-slate-200 focus:outline-none focus:border-indigo-500 transition-all"
               />
               <button 
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="absolute right-2 p-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-200 active:scale-90"
+                className="absolute right-2 p-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition-all"
               >
                 <Send className="w-4 h-4" />
               </button>
@@ -175,14 +175,12 @@ const AIChat: React.FC<AIChatProps> = ({ lang }) => {
         </div>
       )}
 
-      {/* Floating Button */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className={`group relative p-4 rounded-full shadow-2xl transition-all duration-500 active:scale-90 ${
+        className={`p-4 rounded-full shadow-2xl transition-all duration-300 active:scale-90 flex items-center justify-center ${
           isOpen ? 'bg-slate-900 text-white' : 'bg-indigo-600 text-white'
         }`}
       >
-        {!isOpen && <div className="absolute inset-0 rounded-full bg-indigo-400 animate-ping opacity-25"></div>}
         {isOpen ? (
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         ) : (
