@@ -22,7 +22,7 @@ const AIChat: React.FC<AIChatProps> = ({ lang }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log("AIChat component mounted. Language:", lang);
+    console.log("AIChat component is active and running.");
   }, []);
 
   const labels = {
@@ -90,10 +90,10 @@ const AIChat: React.FC<AIChatProps> = ({ lang }) => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] font-sans">
+    <div className="fixed bottom-6 right-6 z-[99999] font-sans">
       {/* Chat Window */}
       {isOpen && (
-        <div className="absolute bottom-20 right-0 w-[320px] sm:w-[350px] md:w-[400px] h-[500px] bg-white rounded-[2rem] shadow-2xl border border-slate-100 flex flex-col overflow-hidden animate-fadeIn glass-effect">
+        <div className="absolute bottom-20 right-0 w-[320px] sm:w-[350px] md:w-[400px] h-[500px] bg-white rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] border border-slate-100 flex flex-col overflow-hidden animate-fadeIn glass-effect">
           <div className="p-6 bg-indigo-600 text-white flex justify-between items-center">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white/20 rounded-xl">
@@ -178,12 +178,11 @@ const AIChat: React.FC<AIChatProps> = ({ lang }) => {
       {/* Floating Button */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        aria-label="Toggle AI Chat"
         className={`group relative p-4 rounded-full shadow-2xl transition-all duration-500 active:scale-90 ${
           isOpen ? 'bg-slate-900 text-white' : 'bg-indigo-600 text-white'
         }`}
       >
-        <div className="absolute inset-0 rounded-full bg-indigo-400 animate-ping opacity-20 group-hover:opacity-40"></div>
+        {!isOpen && <div className="absolute inset-0 rounded-full bg-indigo-400 animate-ping opacity-25"></div>}
         {isOpen ? (
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         ) : (
